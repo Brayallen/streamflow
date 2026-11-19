@@ -46,7 +46,35 @@ def plot_streamflow(dates, flows, sites):
     plt.savefig("provo_streamflow.png", dpi=150, bbox_inches="tight")
     plt.show()
 
+# Summarize the streamflow for each gauge
+def summarize(dates, flows, sites):
+     # Verified in Excel for gauge 10163000:
+     # Maximum flow = 131.0 cfs
+     # Average flow = 57.0 cfs (rounded)
+    results = []
 
+    for i, site in enumerate(sites):
+        values = flows[:, i]
+
+        max_flow = np.nanmax(values)
+        min_flow = np.nanmin(values)
+        avg_flow = np.nanmean(values)
+
+        max_index = np.nanargmax(values)
+        max_date = dates[max_index]
+
+        results.append({
+            "Gauge": site,
+            "Max (cfs)": round(max_flow, 1),
+            "Date of max": str(max_date),
+            "Min (cfs)": round(min_flow, 1),
+            "Avg (cfs)": round(avg_flow, 1)
+        })
+
+    summary = pd.DataFrame(results)
+
+    print(summary.to_string(index=False))
+    summary.to_csv("streamflow_summary.csv", index=False)
 # Main program
 sites = ["10163000", "10155200", "10155500",
          "10154200", "10155000"]
@@ -56,3 +84,4 @@ dates, flows = load_streamflow(
 )
 
 plot_streamflow(dates, flows, sites)
+summarize(dates, flows, sites)
