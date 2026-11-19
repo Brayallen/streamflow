@@ -85,3 +85,11 @@ dates, flows = load_streamflow(
 
 plot_streamflow(dates, flows, sites)
 summarize(dates, flows, sites)
+
+# Ask the user for a flow threshold
+threshold = float(input("Enter a flow threshold (cfs): "))
+
+# Calculate hours above the threshold for each gauge
+for i, site in enumerate(sites):
+    hours = np.sum(flows[:, i] > threshold) * 0.25
+    print(f"Gauge {site}: {hours:.2f} hours above {threshold} cfs")
